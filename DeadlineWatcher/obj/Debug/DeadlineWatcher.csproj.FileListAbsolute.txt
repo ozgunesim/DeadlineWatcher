@@ -1,0 +1,16 @@
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\bin\Debug\DeadlineWatcher.exe.config
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\bin\Debug\DeadlineWatcher.exe
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\bin\Debug\DeadlineWatcher.pdb
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\obj\Debug\DeadlineWatcher.csprojAssemblyReference.cache
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\obj\Debug\DeadlineWatcher.Form1.resources
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\obj\Debug\DeadlineWatcher.ProjectDetails.resources
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\obj\Debug\DeadlineWatcher.Properties.Resources.resources
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\obj\Debug\DeadlineWatcher.csproj.GenerateResource.cache
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\obj\Debug\DeadlineWatcher.csproj.CoreCompileInputs.cache
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\obj\Debug\DeadlineWatcher.exe
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\obj\Debug\DeadlineWatcher.pdb
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\bin\Debug\Newtonsoft.Json.dll
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\bin\Debug\Newtonsoft.Json.xml
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\obj\Debug\DeadlineWatcher.csproj.CopyComplete
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\bin\Debug\DeadlineWatcherListItem.dll
+C:\CSharpProjects\DeadlineWatcher\DeadlineWatcher\bin\Debug\DeadlineWatcherListItem.pdb
