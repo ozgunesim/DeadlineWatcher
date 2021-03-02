@@ -31,17 +31,17 @@ namespace DeadlineWatcher
         private void ProjectDetails_Load(object sender, EventArgs e)
         {
             dateStart.Format = DateTimePickerFormat.Custom;
-            dateStart.CustomFormat = "dd/MM/yyyy hh:mm:ss";
+            dateStart.CustomFormat = "dd/MM/yyyy HH:mm:ss";
 
             dateEnd.Format = DateTimePickerFormat.Custom;
-            dateEnd.CustomFormat = "dd/MM/yyyy hh:mm:ss";
+            dateEnd.CustomFormat = "dd/MM/yyyy HH:mm:ss";
         }
 
         private void BtnSave_Click(object sender, EventArgs e)
         {
             ProjectInfo i = new ProjectInfo();
 
-            i.id = MD5.encode(DateTime.Now.ToFileTime().ToString() + rnd.Next(0, 10000).ToString());
+            i.id = (info == null) ? MD5.encode(DateTime.Now.ToFileTime().ToString() + rnd.Next(0, 10000).ToString()) : info.id;
             i.name = txtName.Text;
             i.desc = txtDetails.Text;
             i.start = dateStart.Value;
@@ -54,6 +54,17 @@ namespace DeadlineWatcher
         public ProjectInfo getInfo()
         {
             return this.info;
+        }
+
+        public void setInfo(ProjectInfo i)
+        {
+            this.info = i;
+
+            txtName.Text = i.name;
+            txtDetails.Text = i.desc;
+            dateStart.Value = i.start;
+            dateEnd.Value = i.end;
+            
         }
 
         private void BtnCancel_Click(object sender, EventArgs e)

@@ -18,6 +18,7 @@ namespace DeadlineWatcher
 
         private List<ProjectInfo> projectList = new List<ProjectInfo>();
         private string json_path = null;
+        private string dragTarget;
 
 
         public Form1()
@@ -49,13 +50,12 @@ namespace DeadlineWatcher
 
         private void SaveProject(ProjectInfo p)
         {
-            List<ProjectInfo> list = LoadProjects();
             bool exists = false;
-            for(int i=0; i<list.Count; i++)
+            for(int i=0; i< projectList.Count; i++)
             {
-                if(list[i].id == p.id)
+                if(projectList[i].id == p.id)
                 {
-                    list[i] = p;
+                    projectList[i] = p;
                     exists = true;
                     break;
                 }
@@ -63,38 +63,37 @@ namespace DeadlineWatcher
 
             if (!exists)
             {
-                list.Add(p);
+                projectList.Add(p);
             }
             
 
-            string str_json = JsonConvert.SerializeObject(list, Formatting.Indented);
+            string str_json = JsonConvert.SerializeObject(projectList, Formatting.Indented);
             File.WriteAllText(json_path, str_json);
         }
 
         private void DeleteProject(string id)
         {
-            List<ProjectInfo> list = LoadProjects();
-            for (int i = 0; i < list.Count; i++)
+            for (int i = 0; i < projectList.Count; i++)
             {
-                if (list[i].id == id)
+                if (projectList[i].id == id)
                 {
-                    list.RemoveAt(i);
+                    projectList.RemoveAt(i);
                     break;
                 }
             }
 
-            string str_json = JsonConvert.SerializeObject(list, Formatting.Indented);
+            string str_json = JsonConvert.SerializeObject(projectList, Formatting.Indented);
             File.WriteAllText(json_path, str_json);
         }
 
 
         private void ListProjects()
         {
+            container.Controls.Clear();
             foreach(ProjectInfo i in projectList)
             {
                 DeadlineWatcherListItem.ProjectListItem item = new DeadlineWatcherListItem.ProjectListItem();
                 item.Dock = DockStyle.Top;
-                container.Controls.Add(item);
 
                 item.project_name = i.name;
                 item.id = i.id;
@@ -102,38 +101,121 @@ namespace DeadlineWatcher
                 item.project_start = i.start;
                 item.project_end = i.end;
 
+                item.AllowDrop = true;
+
                 item.DeleteClicked += İtem_DeleteClicked;
+                item.UpdateClicked += İtem_UpdateClicked;
+
+                item.DragEnter += İtem_DragEnter;
+                item.DragLeave += İtem_DragLeave;
+                item.DragDrop += İtem_DragDrop;
+                
+
+
+                container.Controls.Add(item);
             }
+        }
+
+        private void İtem_DragLeave(object sender, EventArgs e)
+        {
+            DeadlineWatcherListItem.ProjectListItem itm = (DeadlineWatcherListItem.ProjectListItem)sender;
+            itm.showDragArrow(false);
+        }
+
+        private void İtem_DragDrop(object sender, DragEventArgs e)
+        {
+            DeadlineWatcherListItem.ProjectListItem itm = (DeadlineWatcherListItem.ProjectListItem)sender;
+            itm.showDragArrow(false);
+
+            string source = e.Data.GetData("DragSourceID").ToString();
+            //Console.WriteLine(source + " -> " + dragTarget);
+
+            int index = 0;
+            int source_index = -1;
+            int target_index = -1;
+            foreach(ProjectInfo i in projectList)
+            {
+                if(i.id == source)
+                {
+                    source_index = index;
+                }
+                if(i.id == dragTarget)
+                {
+                    target_index = index;
+                }
+                index++;
+            }
+
+            if(source_index != -1 && target_index != -1 && source_index != target_index)
+            {
+                ProjectInfo temp = projectList[source_index];
+                projectList[source_index] = projectList[target_index];
+                projectList[target_index] = temp;
+                string str_json = JsonConvert.SerializeObject(projectList, Formatting.Indented);
+                File.WriteAllText(json_path, str_json);
+                ListProjects();
+
+            }
+
+            dragTarget = "";
+            
+            //Console.WriteLine(e.Data.ToString());
+        }
+
+
+
+        private void İtem_DragEnter(object sender, DragEventArgs e)
+        {
+            DeadlineWatcherListItem.ProjectListItem itm = (DeadlineWatcherListItem.ProjectListItem)sender;
+            e.Effect = DragDropEffects.Move;
+            itm.showDragArrow(true);
+            dragTarget = itm.id;
         }
 
         private void BtnAddProject_Click(object sender, EventArgs e)
         {
 
-
             ProjectDetails pd = new ProjectDetails();
             if(pd.ShowDialog() == DialogResult.OK)
             {
                 ProjectInfo i = pd.getInfo();
-                string json_val = JsonConvert.SerializeObject(i, Formatting.Indented);
-
-
-                DeadlineWatcherListItem.ProjectListItem item = new DeadlineWatcherListItem.ProjectListItem();
-                item.Dock = DockStyle.Top;
-                container.Controls.Add(item);
-
-                item.project_name = i.name;
-                item.id = i.id;
-                item.project_desc = i.desc;
-                item.project_start = i.start;
-                item.project_end = i.end;
-
-                item.DeleteClicked += İtem_DeleteClicked;
+                projectList.Add(i);
 
                 SaveProject(i);
+                ListProjects();
             }
         }
 
-        private void İtem_DeleteClicked(object sender)
+        private void İtem_UpdateClicked(object sender, string id)
+        {
+            DeadlineWatcherListItem.ProjectListItem itm = (DeadlineWatcherListItem.ProjectListItem)sender;
+            ProjectDetails pd = new ProjectDetails();
+            foreach(ProjectInfo i in projectList)
+            {
+                if(i.id == itm.id)
+                {
+                    pd.setInfo(i);
+                    break;
+                }
+            }
+            if(pd.ShowDialog() == DialogResult.OK)
+            {
+                for(int i=0; i<projectList.Count; i++)
+                {
+                    if(projectList[i].id == pd.getInfo().id)
+                    {
+                        projectList[i] = pd.getInfo();
+                        SaveProject(pd.getInfo());
+                        break;
+                    }
+                }
+                ListProjects();
+            }
+
+
+        }
+
+        private void İtem_DeleteClicked(object sender, string id)
         {
             if(MessageBox.Show("Emin Misiniz?", "Proje Sil", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
@@ -144,7 +226,7 @@ namespace DeadlineWatcher
                     if (((DeadlineWatcherListItem.ProjectListItem)c).id == itm.id)
                     {
                         DeleteProject(itm.id);
-                        container.Controls.RemoveAt(i);
+                        ListProjects();
                         break;
                     }
                 }
@@ -160,6 +242,7 @@ namespace DeadlineWatcher
             this.Left = Screen.PrimaryScreen.Bounds.Width - this.Width;
             this.Top = 0;
             chkStartup.Checked = Startup.isRegistered();
+            this.ActiveControl = chkStartup;
         }
 
 
